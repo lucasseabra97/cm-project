@@ -1,3 +1,4 @@
+import 'package:bikeTrack/screens/maps_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/authentication.dart';
@@ -45,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await Provider.of<Authentication>(context, listen: false)
           .logIn(_authData['email'], _authData['password']);
 
-      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(MapsScreen.routeName);
     } catch (error) {
       var errorMessage = 'Authentication Failed. Please try again...';
       _showErrorDialog(errorMessage);

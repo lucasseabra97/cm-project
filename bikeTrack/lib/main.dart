@@ -1,3 +1,4 @@
+import 'package:bikeTrack/screens/maps_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -29,7 +30,8 @@ class MyApp extends StatelessWidget {
           routes: {
             SignupScreen.routeName: (ctx) => SignupScreen(),
             LoginScreen.routeName: (ctx) => LoginScreen(),
-            HomeScreen.routeName: (ctx) => HomeScreen()
+            HomeScreen.routeName: (ctx) => HomeScreen(),
+            MapsScreen.routeName: (ctx) => MapsScreen()
           },
         ));
   }
