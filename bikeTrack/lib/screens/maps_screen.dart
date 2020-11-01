@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+//import 'package:location/location.dart';
 
 class MapsScreen extends StatefulWidget {
   static const routeName = '/maps';
@@ -19,16 +19,12 @@ class _MapsScreen extends State<MapsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            appBar: AppBar(
-              title: Text('Maps Screen'),
-              backgroundColor: Colors.blue[300],
-            ),
+    return Scaffold(
             body: GoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition:
                   CameraPosition(target: _center, zoom: 11.0),
-            )));
+            )
+    );
   }
 }

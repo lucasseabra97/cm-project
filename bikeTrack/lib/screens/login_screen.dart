@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await Provider.of<Authentication>(context, listen: false)
           .logIn(_authData['email'], _authData['password']);
 
-      Navigator.of(context).pushReplacementNamed(MapsScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
     } catch (error) {
       var errorMessage = 'Authentication Failed. Please try again...';
       _showErrorDialog(errorMessage);

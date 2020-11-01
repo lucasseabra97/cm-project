@@ -12,7 +12,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Flutter login UI',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primarySwatch: Colors.amber,
           ),
-          home: LoginScreen(),
+          home: HomeScreen(),
           routes: {
             SignupScreen.routeName: (ctx) => SignupScreen(),
             LoginScreen.routeName: (ctx) => LoginScreen(),
