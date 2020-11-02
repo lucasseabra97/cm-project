@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'history_screen.dart';
 import 'maps_screen.dart';
 
-
-
 class HomeScreen extends StatefulWidget {
   @override
   static const routeName = '/home';
@@ -14,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen> {
-   int _currentIndex = 0;
+  int _currentIndex = 0;
 
   final List<Widget> _screens = [
     MapsScreen(),
@@ -36,42 +34,30 @@ class _HomeScreen extends State<HomeScreen> {
 
     var _bottomNavigationItems = <BottomNavigationBarItem>[
       BottomNavigationBarItem(
-        icon: const Icon(Icons.map_rounded),
-        label: 'Mapas'
-      ),
-       BottomNavigationBarItem(
-        icon: const Icon(Icons.history),
-        label: 'History'
-      ),
-       BottomNavigationBarItem(
-        icon: const Icon(Icons.camera_alt),
-        label: 'Camara'
-      ),
-       BottomNavigationBarItem(
-        icon: const Icon(Icons.photo_album),
-        label: 'Galeria'
-      ),
+          icon: const Icon(Icons.map_rounded), label: 'Mapas'),
+      BottomNavigationBarItem(
+          icon: const Icon(Icons.history), label: 'History'),
+      BottomNavigationBarItem(
+          icon: const Icon(Icons.camera_alt), label: 'Camara'),
+      BottomNavigationBarItem(
+          icon: const Icon(Icons.photo_album), label: 'Galeria'),
     ];
 
     return Scaffold(
-
-      appBar: AppBar(
-        title: Text('BikeTrack'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: _screens[_currentIndex],
-
-      bottomNavigationBar: BottomNavigationBar(
-        type:  BottomNavigationBarType.fixed,
-        items: _bottomNavigationItems,
-        onTap: _onItemTapped,
-        currentIndex: _currentIndex,
-        selectedFontSize: textTheme.caption.fontSize,
-        unselectedFontSize: textTheme.caption.fontSize,
-        selectedItemColor: colorScheme.onPrimary,
-        unselectedItemColor: colorScheme.onPrimary.withOpacity(0.4),
-        backgroundColor: colorScheme.primary
-      )
-    );
+        appBar: AppBar(
+          title: Text('BikeTrack'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        body: _screens[_currentIndex],
+        bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: _bottomNavigationItems,
+            onTap: _onItemTapped,
+            currentIndex: _currentIndex,
+            selectedFontSize: textTheme.caption.fontSize,
+            unselectedFontSize: textTheme.caption.fontSize,
+            selectedItemColor: colorScheme.onPrimary,
+            unselectedItemColor: colorScheme.onPrimary.withOpacity(0.4),
+            backgroundColor: colorScheme.primary));
   }
 }

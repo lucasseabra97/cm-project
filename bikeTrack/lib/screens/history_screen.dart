@@ -9,10 +9,7 @@ class _HistoryScreen extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body: Center(
-          child: Text("History Screen")
-          ),
+      body: Center(child: Text("History Screen")),
     );
   }
 }
