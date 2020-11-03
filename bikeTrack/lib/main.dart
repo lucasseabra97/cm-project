@@ -1,4 +1,5 @@
 import 'package:bikeTrack/screens/maps_screen.dart';
+import 'package:bikeTrack/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.amber,
           ),
-          home: HomeScreen(),
+          home: Splash_Screen(),
           routes: {
             SignupScreen.routeName: (ctx) => SignupScreen(),
             LoginScreen.routeName: (ctx) => LoginScreen(),
