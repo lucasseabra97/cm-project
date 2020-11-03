@@ -49,7 +49,6 @@ class _HomeScreen extends State<HomeScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('BikeTrack'),
           backgroundColor: Theme.of(context).primaryColor,
         ),
         body: _screens[_currentIndex],

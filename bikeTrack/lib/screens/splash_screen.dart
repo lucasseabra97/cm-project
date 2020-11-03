@@ -19,7 +19,7 @@ class _SplashScreen extends State<Splash_Screen> {
               'BikeTrack',
               style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
             ),
-            image: Image.asset("assets/logo.png"),
+            image: Image.asset("assets/logo2.png"),
             backgroundColor: Colors.amber,
             loadingText: Text("Getting Started"),
             styleTextUnderTheLoader: new TextStyle(),
