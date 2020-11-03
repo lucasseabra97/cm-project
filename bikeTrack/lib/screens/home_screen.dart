@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'history_screen.dart';
 import 'maps_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,7 +19,8 @@ class _HomeScreen extends State<HomeScreen> {
     MapsScreen(),
     HistoryScreen(),
     CameraScreen(),
-    GalleryScreen()
+    GalleryScreen(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -41,6 +43,8 @@ class _HomeScreen extends State<HomeScreen> {
           icon: const Icon(Icons.camera_alt), label: 'Camara'),
       BottomNavigationBarItem(
           icon: const Icon(Icons.photo_album), label: 'Galeria'),
+      BottomNavigationBarItem(
+          icon: const Icon(Icons.account_box_rounded), label: 'Profile'),
     ];
 
     return Scaffold(
