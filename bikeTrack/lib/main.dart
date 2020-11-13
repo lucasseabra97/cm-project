@@ -1,4 +1,3 @@
-import 'package:bikeTrack/screens/maps_screen.dart';
 import 'package:bikeTrack/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';

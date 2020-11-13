@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,7 +18,7 @@ const double CAMERA_BEARING = 30;
 const LatLng SOURCE_LOCATION = LatLng(42.747932, -71.167889);
 const LatLng DEST_LOCATION = LatLng(37.335685, -122.0605916);
 
-class _MapsScreen extends State<MapsScreen> {
+class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
   Completer<GoogleMapController> _controller = Completer();
 
   Set<Marker> _markers = Set<Marker>();
@@ -39,6 +41,7 @@ class _MapsScreen extends State<MapsScreen> {
 
   Location location;
 
+
   @override
   void initState() {
     super.initState();
@@ -48,8 +51,8 @@ class _MapsScreen extends State<MapsScreen> {
     polylinePoints = PolylinePoints();
 
     location.onLocationChanged.listen((LocationData cLoc) {
+      initialposition = currentLocation;
       currentLocation = cLoc;
-      initialposition = cLoc;
       updatePinOnMap();
     });
 
@@ -91,15 +94,11 @@ class _MapsScreen extends State<MapsScreen> {
     });
 
     currentLocation = await location.getLocation();
-
-    destinationLocation = LocationData.fromMap({
-      "latitude": DEST_LOCATION.latitude,
-      "longitude": DEST_LOCATION.longitude
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     CameraPosition initialCameraPosition = CameraPosition(
         zoom: CAMERA_ZOOM,
         tilt: CAMERA_TILT,
@@ -140,34 +139,40 @@ class _MapsScreen extends State<MapsScreen> {
           position: pinPosition,
           icon: sourceIcon));
     }
-
-    setPolyLines();
   }
 
   void setPolyLines() async {
-    if (currentLocation != null && destinationLocation != null) {
+    log("calculating result");
+    log(currentLocation.toString());
+    log(initialposition.toString());
+  
+    if (currentLocation != null && initialposition != null) {
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPIKey,
-        PointLatLng(currentLocation.latitude, currentLocation.longitude),
+        PointLatLng(initialposition.latitude, initialposition.longitude),
         PointLatLng(
-            destinationLocation.latitude, destinationLocation.longitude),
+            currentLocation.latitude, currentLocation.longitude),
       );
+      log(result.points.toString());
       if (result.points.isNotEmpty) {
         result.points.forEach((PointLatLng point) {
           polylineCoords.add(LatLng(point.latitude, point.longitude));
         });
-        setState(() {
+        if(mounted){
+          setState(() {
           _polylines.add(Polyline(
               width: 5, // set the width of the polylines
               polylineId: PolylineId("poly"),
               color: Color.fromARGB(255, 40, 122, 198),
               points: polylineCoords));
         });
+        }
       }
     }
   }
 
   void updatePinOnMap() async {
+    if(mounted){
     CameraPosition cPosition = CameraPosition(
       zoom: CAMERA_ZOOM,
       tilt: CAMERA_TILT,
@@ -178,7 +183,8 @@ class _MapsScreen extends State<MapsScreen> {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(cPosition));
 
-    setState(() {
+    
+      setState(() {
       var pinPosition =
           LatLng(currentLocation.latitude, currentLocation.longitude);
 
@@ -188,5 +194,10 @@ class _MapsScreen extends State<MapsScreen> {
           position: pinPosition,
           icon: sourceIcon));
     });
+    setPolyLines();
+    }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

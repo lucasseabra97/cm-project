@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'qrGenerator_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
