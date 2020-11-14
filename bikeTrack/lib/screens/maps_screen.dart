@@ -41,6 +41,10 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
 
   Location location;
 
+  bool _buttonPressed = false;
+
+  StreamSubscription _locationSubscription;
+
 
   @override
   void initState() {
@@ -50,15 +54,17 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
 
     polylinePoints = PolylinePoints();
 
-    location.onLocationChanged.listen((LocationData cLoc) {
+    setSourceAndDestinationIcons();
+
+    setInitialLocation();
+  }
+
+  void _listenLocation(){
+     _locationSubscription = location.onLocationChanged.listen((LocationData cLoc) {
       initialposition = currentLocation;
       currentLocation = cLoc;
       updatePinOnMap();
     });
-
-    setSourceAndDestinationIcons();
-
-    setInitialLocation();
   }
 
   void setSourceAndDestinationIcons() async {
@@ -113,20 +119,65 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
           bearing: CAMERA_BEARING);
     }
 
-    return Stack(children: <Widget>[
-      GoogleMap(
-          myLocationButtonEnabled: true,
-          compassEnabled: true,
-          tiltGesturesEnabled: true,
-          markers: _markers,
-          polylines: _polylines,
-          mapType: MapType.normal,
-          initialCameraPosition: initialCameraPosition,
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-            showPinsOnMap();
-          })
-    ]);
+    return Scaffold(
+        body: Stack(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 0),
+              child: GoogleMap(
+                myLocationButtonEnabled: false,
+                compassEnabled: false,
+                tiltGesturesEnabled: false,
+                markers: _markers,
+                polylines: _polylines,
+                mapType: MapType.normal,
+                initialCameraPosition: initialCameraPosition,
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                  showPinsOnMap();
+                }),
+            ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Container(
+                  decoration: BoxDecoration(
+                    color:  Colors.white,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20.0),
+                    ), 
+                  ),
+                  width: MediaQuery.of(context).size.width * 0.95,
+                   child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          RaisedButton(
+                            onPressed: _setLocationListening,
+                            color: Colors.amber,
+                            child: Text("Start/Stop Tracking"),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              )
+          ]),
+    );
+  }
+
+  void _setLocationListening(){
+    _buttonPressed = !_buttonPressed;
+    if(_buttonPressed){
+      _listenLocation();
+    }
+    else{
+      _locationSubscription.cancel();
+    }
+    log(_buttonPressed.toString());
   }
 
   void showPinsOnMap() {

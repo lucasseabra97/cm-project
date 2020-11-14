@@ -36,13 +36,13 @@ class _HomeScreen extends State<HomeScreen> {
 
     var _bottomNavigationItems = <BottomNavigationBarItem>[
       BottomNavigationBarItem(
-          icon: const Icon(Icons.map_rounded), label: 'Mapas'),
+          icon: const Icon(Icons.map_rounded), label: 'Track'),
       BottomNavigationBarItem(
           icon: const Icon(Icons.history), label: 'History'),
       BottomNavigationBarItem(
-          icon: const Icon(Icons.camera_alt), label: 'Camara'),
+          icon: const Icon(Icons.camera_alt), label: 'Camera'),
       BottomNavigationBarItem(
-          icon: const Icon(Icons.photo_album), label: 'Galeria'),
+          icon: const Icon(Icons.photo_album), label: 'Gallery'),
       BottomNavigationBarItem(
           icon: const Icon(Icons.account_box_rounded), label: 'Profile'),
     ];
