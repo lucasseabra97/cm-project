@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'dart:async';
@@ -25,6 +26,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
 
   Set<Polyline> _polylines = Set<Polyline>();
   List<LatLng> polylineCoords = [];
+  List<LatLng> distanceReg = [];
   PolylinePoints polylinePoints;
 
   String googleAPIKey = "AIzaSyCUWJ02dCx6IJEOHDQdD45Dc7zREMFynhQ";
@@ -45,6 +47,12 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
 
   StreamSubscription _locationSubscription;
 
+  List<double> _speeds = List<double>();
+
+  double _avgSpd = 0;
+
+  double _totalDistance= 0;
+
 
   @override
   void initState() {
@@ -54,15 +62,34 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
 
     polylinePoints = PolylinePoints();
 
+    _locationSubscription = location.onLocationChanged.listen((LocationData cLoc) {
+      initialposition = currentLocation;
+      currentLocation = cLoc;
+      updatePinOnMap();
+    });
+
+    _locationSubscription.cancel();
+
     setSourceAndDestinationIcons();
 
     setInitialLocation();
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _locationSubscription.cancel();
   }
 
   void _listenLocation(){
      _locationSubscription = location.onLocationChanged.listen((LocationData cLoc) {
       initialposition = currentLocation;
       currentLocation = cLoc;
+      if(currentLocation.speed != null){
+        _speeds.add(currentLocation.speed);
+      }
+      _calculateDistance();
+      _calculateAvgSpeed();
       updatePinOnMap();
     });
   }
@@ -100,6 +127,8 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
     });
 
     currentLocation = await location.getLocation();
+
+    updatePinOnMap();
   }
 
   @override
@@ -157,8 +186,11 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
                           RaisedButton(
                             onPressed: _setLocationListening,
                             color: Colors.amber,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             child: Text("Start/Stop Tracking"),
-                          )
+                          ),
+                          Text("Average Speed: " + _avgSpd.toString()),
+                          Text("Distance: $_totalDistance" ),
                         ],
                       ),
                     ),
@@ -173,11 +205,16 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
     _buttonPressed = !_buttonPressed;
     if(_buttonPressed){
       _listenLocation();
+      polylineCoords.clear();
+      _polylines.clear();
     }
     else{
       _locationSubscription.cancel();
+      _avgSpd = 0;
+      _totalDistance= 0;
     }
     log(_buttonPressed.toString());
+    
   }
 
   void showPinsOnMap() {
@@ -196,7 +233,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
     log("calculating result");
     log(currentLocation.toString());
     log(initialposition.toString());
-  
+    log(currentLocation.speed.toString());
     if (currentLocation != null && initialposition != null) {
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPIKey,
@@ -208,6 +245,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
       if (result.points.isNotEmpty) {
         result.points.forEach((PointLatLng point) {
           polylineCoords.add(LatLng(point.latitude, point.longitude));
+          distanceReg.add(LatLng(point.latitude, point.longitude));
         });
         if(mounted){
           setState(() {
@@ -249,6 +287,20 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
     }
   }
 
+  void _calculateAvgSpeed(){
+    _speeds.forEach((double element) {
+      _avgSpd += element; 
+    });
+    _avgSpd = (_avgSpd/_speeds.length) * 3.6;
+  }
+
+  void _calculateDistance() {
+    for(int i = 0; i < distanceReg.length - 1; i++){
+      _totalDistance += Geolocator.distanceBetween(distanceReg[i].latitude, distanceReg[i].longitude, distanceReg[i+1].latitude, distanceReg[i+1].longitude);
+    }
+    distanceReg.clear();   
+  }
+  
   @override
   bool get wantKeepAlive => true;
 }
