@@ -1,0 +1,68 @@
+import 'dart:io';
+import 'package:bikeTrack/services/track_info.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+
+class DatabaseHelper {
+
+      static final _databaseName = "client_locations.db";
+
+      // Increment this version when you need to change the schema.
+      static final _databaseVersion = 1;
+
+      DatabaseHelper._privateConstructor();
+      static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+
+      static Database _database;
+      Future<Database> get database async {
+        if (_database != null) return _database;
+        _database = await _initDatabase();
+        return _database;
+      }
+
+      _initDatabase() async {
+
+        Directory documentsDirectory = await getApplicationDocumentsDirectory();
+        String path = join(documentsDirectory.path, _databaseName);
+
+        return await openDatabase(path,
+            version: _databaseVersion,
+            onCreate: _onCreate);
+      }
+
+      // SQL string to create the database 
+      Future _onCreate(Database db, int version) async {
+        await db.execute('''
+              CREATE TABLE TableTrackInfo (
+                _id INTEGER PRIMARY KEY,
+                avgSpeed DOUBLE NOT NULL,
+                distance DOUBLE NOT NULL,
+                initial_pos DOUBLE NOT NULL,
+                final_pos DOUBLE NOT NULL
+              )
+              ''');
+      }
+
+      // Database helper methods:
+
+      Future<int> insert(TrackInfo location) async {
+        Database db = await database;
+        int id = await db.insert('TableTrackInfo', location.toMap());
+        return id;
+      }
+
+      Future<List<TrackInfo>> queryAll() async {
+        Database db = await database;
+        List<Map> maps = await db.query('TableLocations');
+        return List.generate(maps.length, (i) {
+          return TrackInfo(
+            id: maps[i]['_id'],
+            avgSpeed: maps[i]['avgSpeed'],
+            distance: maps[i]['distance'],
+            initPos: maps[i]['initialPos'],
+            fPos: maps[i]['finalPos']
+          );
+        });
+      }
+}

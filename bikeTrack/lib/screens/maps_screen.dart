@@ -12,12 +12,13 @@ class MapsScreen extends StatefulWidget {
   @override
   _MapsScreen createState() => _MapsScreen();
 }
-
+/* 
+TODO: Save button when DB is operational;   Pause/Resume button with associated functionality
+ */
 const double CAMERA_ZOOM = 16;
 const double CAMERA_TILT = 80;
 const double CAMERA_BEARING = 30;
 const LatLng SOURCE_LOCATION = LatLng(42.747932, -71.167889);
-const LatLng DEST_LOCATION = LatLng(37.335685, -122.0605916);
 
 class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
   Completer<GoogleMapController> _controller = Completer();
@@ -25,8 +26,11 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
   Set<Marker> _markers = Set<Marker>();
 
   Set<Polyline> _polylines = Set<Polyline>();
+
   List<LatLng> polylineCoords = [];
+
   List<LatLng> distanceReg = [];
+  
   PolylinePoints polylinePoints;
 
   String googleAPIKey = "AIzaSyCUWJ02dCx6IJEOHDQdD45Dc7zREMFynhQ";
