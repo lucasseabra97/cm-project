@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:bikeTrack/services/database_helper.dart';
+import 'package:bikeTrack/services/track_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
@@ -56,6 +58,8 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
   double _avgSpd = 0;
 
   double _totalDistance= 0;
+
+  DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
 
   @override
@@ -214,6 +218,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
     }
     else{
       _locationSubscription.cancel();
+      _saveToDB();
       _avgSpd = 0;
       _totalDistance= 0;
     }
@@ -234,10 +239,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
   }
 
   void setPolyLines() async {
-    log("calculating result");
-    log(currentLocation.toString());
-    log(initialposition.toString());
-    log(currentLocation.speed.toString());
+    log(polylineCoords.toString());
     if (currentLocation != null && initialposition != null) {
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPIKey,
@@ -245,7 +247,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
         PointLatLng(
             currentLocation.latitude, currentLocation.longitude),
       );
-      log(result.points.toString());
+
       if (result.points.isNotEmpty) {
         result.points.forEach((PointLatLng point) {
           polylineCoords.add(LatLng(point.latitude, point.longitude));
@@ -303,6 +305,18 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
       _totalDistance += Geolocator.distanceBetween(distanceReg[i].latitude, distanceReg[i].longitude, distanceReg[i+1].latitude, distanceReg[i+1].longitude);
     }
     distanceReg.clear();   
+  }
+
+  void _saveToDB() async{
+    TrackInfo trackInfo = TrackInfo();
+    trackInfo.avgSpeed = _avgSpd;
+    trackInfo.distance = _totalDistance;
+    trackInfo.initPosLat = polylineCoords[0].latitude;
+    trackInfo.initPosLng = polylineCoords[0].longitude;
+    trackInfo.fPosLat = polylineCoords[polylineCoords.length - 1].latitude;
+    trackInfo.fPosLng = polylineCoords[polylineCoords.length - 1].longitude;
+    int id = await _dbHelper.insert(trackInfo);
+    log(id.toString());
   }
   
   @override

@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
 
-      static final _databaseName = "client_locations.db";
+      static final _databaseName = "trackInfo.db";
 
       // Increment this version when you need to change the schema.
       static final _databaseVersion = 1;
@@ -38,8 +38,10 @@ class DatabaseHelper {
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 avgSpeed DOUBLE NOT NULL,
                 distance DOUBLE NOT NULL,
-                initialPos DOUBLE NOT NULL,
-                finalPos DOUBLE NOT NULL
+                initialPosLat DOUBLE NOT NULL,
+                initialPosLng DOUBLE NOT NULL,
+                finalPosLat DOUBLE NOT NULL,
+                finalPosLng DOUBLE NOT NULL
               )
               ''');
       }
@@ -60,8 +62,10 @@ class DatabaseHelper {
             id: maps[i]['_id'],
             avgSpeed: maps[i]['avgSpeed'],
             distance: maps[i]['distance'],
-            initPos: maps[i]['initialPos'],
-            fPos: maps[i]['finalPos']
+            initPosLat: maps[i]['initialPosLat'],
+            initPosLng: maps[i]['initialPosLng'],
+            fPosLat: maps[i]['finalPosLat'],
+            fPosLng: maps[i]['finalPosLng'],
           );
         });
       }

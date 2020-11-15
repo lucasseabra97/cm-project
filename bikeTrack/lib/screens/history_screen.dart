@@ -11,16 +11,19 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreen extends State<HistoryScreen> {
 
- int n_cards = 5;
-
  List<TrackInfo> _tracks = [];
 
- DatabaseHelper db_helper = DatabaseHelper.instance;
+ List<TrackInfo> _tracks_res = [];
+
+ DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
  @override
- void initState(){
+ void initState() {
    super.initState();
+
   _queryDB();
+  
+  log(_tracks.length.toString());
  }
 
  void dispose(){
@@ -57,6 +60,10 @@ class _HistoryScreen extends State<HistoryScreen> {
   }
 
   void _queryDB() async {
-    _tracks = db_helper.queryAll() as List<TrackInfo>;
+    _tracks = await _dbHelper.queryAll();
+    setState(() {
+      _tracks_res = _tracks;
+    });
+    log(_tracks.toString());
   }
 }
