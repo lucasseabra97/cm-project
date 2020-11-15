@@ -35,11 +35,11 @@ class DatabaseHelper {
       Future _onCreate(Database db, int version) async {
         await db.execute('''
               CREATE TABLE TableTrackInfo (
-                _id INTEGER PRIMARY KEY,
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 avgSpeed DOUBLE NOT NULL,
                 distance DOUBLE NOT NULL,
-                initial_pos DOUBLE NOT NULL,
-                final_pos DOUBLE NOT NULL
+                initialPos DOUBLE NOT NULL,
+                finalPos DOUBLE NOT NULL
               )
               ''');
       }
@@ -54,7 +54,7 @@ class DatabaseHelper {
 
       Future<List<TrackInfo>> queryAll() async {
         Database db = await database;
-        List<Map> maps = await db.query('TableLocations');
+        List<Map> maps = await db.query('TableTrackInfo');
         return List.generate(maps.length, (i) {
           return TrackInfo(
             id: maps[i]['_id'],

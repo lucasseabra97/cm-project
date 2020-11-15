@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bikeTrack/services/track_info.dart';
 import 'package:bikeTrack/services/database_helper.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +15,7 @@ class _HistoryScreen extends State<HistoryScreen> {
 
  List<TrackInfo> _tracks = [];
 
- DatabaseHelper db_helper;
+ DatabaseHelper db_helper = DatabaseHelper.instance;
 
  @override
  void initState(){
@@ -54,7 +56,7 @@ class _HistoryScreen extends State<HistoryScreen> {
     );
   }
 
-  void _queryDB(){
+  void _queryDB() async {
     _tracks = db_helper.queryAll() as List<TrackInfo>;
   }
 }
