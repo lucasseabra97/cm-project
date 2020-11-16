@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:bikeTrack/services/database_helper.dart';
 import 'package:bikeTrack/services/track_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -24,6 +26,8 @@ Set<Marker> _markers = Set<Marker>();
 
 BitmapDescriptor sourceIcon;
 
+BitmapDescriptor destinationIcon;
+
 PolylinePoints polylinePoints;
 
 List<LatLng> polylineCoords = [];
@@ -43,12 +47,19 @@ class _HistoryInfoState extends State<HistoryInfo> {
   void initState() {
     super.initState();
 
+    polylinePoints = PolylinePoints();
+
     _queryTrackInfo(widget.index);
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    polylineCoords.clear();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TrackInfo _trackInfo = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         title: Text("Track Info"),
@@ -67,14 +78,21 @@ class _HistoryInfoState extends State<HistoryInfo> {
               LatLng FINAL_LOCATION =
                   LatLng(snapshot.data.fPosLat, snapshot.data.fPosLng);
 
-              polylineCoords.add(SOURCE_LOCATION);
-              polylineCoords.add(FINAL_LOCATION);
-
               CameraPosition intialCameraPosition = CameraPosition(
                   zoom: CAMERA_ZOOM,
                   tilt: CAMERA_TILT,
                   bearing: CAMERA_BEARING,
                   target: SOURCE_LOCATION);
+
+              BitmapDescriptor.fromAssetImage(
+                      createLocalImageConfiguration(context),
+                      'assets/markerA.png')
+                  .then((value) => sourceIcon = value);
+
+              BitmapDescriptor.fromAssetImage(
+                      createLocalImageConfiguration(context),
+                      'assets/markerB.png')
+                  .then((value) => destinationIcon = value);
 
               return Stack(children: <Widget>[
                 GoogleMap(
@@ -87,16 +105,11 @@ class _HistoryInfoState extends State<HistoryInfo> {
                     mapType: MapType.normal,
                     onMapCreated: (GoogleMapController controller) {
                       _controller.complete(controller);
-                      showPinsOnMap(
+                      updatePinOnMap(
                           snapshot.data.initPosLat,
                           snapshot.data.initPosLng,
                           snapshot.data.fPosLat,
                           snapshot.data.fPosLng);
-                      /* updatePinOnMap(
-                          snapshot.data.initPosLat,
-                          snapshot.data.initPosLng,
-                          snapshot.data.fPosLat,
-                          snapshot.data.fPosLng); */
                     })
               ]);
             }
@@ -104,29 +117,8 @@ class _HistoryInfoState extends State<HistoryInfo> {
     );
   }
 
-  void showPinsOnMap(double ilat, double ilng, flat, flng) {
-    var pinPosition = LatLng(ilat, ilng);
-    var finalPosition = LatLng(flat, flng);
-    sourceIcon = BitmapDescriptor.defaultMarker;
-
-    _markers.add(Marker(
-        markerId: MarkerId('sourcePin'),
-        position: pinPosition,
-        icon: sourceIcon));
-
-    _markers.add(Marker(
-        markerId: MarkerId('finalPin'),
-        position: finalPosition,
-        icon: sourceIcon));
-  }
-
   void setPolyLines(double ilat, double ilng, double flat, double flng) async {
     if (ilat != null && ilng != null && flat != null && flng != null) {
-      log("IN POLYLINES");
-      log(ilat.toString());
-      log(ilng.toString());
-      log(flat.toString());
-      log(flng.toString());
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPIKey,
         PointLatLng(ilat, ilng),
@@ -152,12 +144,6 @@ class _HistoryInfoState extends State<HistoryInfo> {
 
   Future<TrackInfo> _queryTrackInfo(int index) async {
     _trackInfo = await _dbHelper.queryTrackInfo(index);
-/*     log(_trackInfo.avgSpeed.toString());
-    log(_trackInfo.distance.toString());
-    log(_trackInfo.initPosLat.toString());
-    log(_trackInfo.initPosLng.toString());
-    log(_trackInfo.fPosLat.toString());
-    log(_trackInfo.fPosLng.toString()); */
     return _trackInfo;
   }
 
@@ -178,7 +164,7 @@ class _HistoryInfoState extends State<HistoryInfo> {
         _markers.add(Marker(
             markerId: MarkerId('finalPin'),
             position: finalPosition,
-            icon: sourceIcon));
+            icon: destinationIcon));
       });
       setPolyLines(ilat, ilng, flat, flng);
     }
