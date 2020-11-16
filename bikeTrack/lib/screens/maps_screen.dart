@@ -14,15 +14,13 @@ class MapsScreen extends StatefulWidget {
   @override
   _MapsScreen createState() => _MapsScreen();
 }
-/* 
-TODO: Save button when DB is operational;   Pause/Resume button with associated functionality
- */
+
 const double CAMERA_ZOOM = 16;
 const double CAMERA_TILT = 80;
 const double CAMERA_BEARING = 30;
 const LatLng SOURCE_LOCATION = LatLng(42.747932, -71.167889);
 
-class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
+class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
   Completer<GoogleMapController> _controller = Completer();
 
   Set<Marker> _markers = Set<Marker>();
@@ -32,7 +30,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
   List<LatLng> polylineCoords = [];
 
   List<LatLng> distanceReg = [];
-  
+
   PolylinePoints polylinePoints;
 
   String googleAPIKey = "AIzaSyCUWJ02dCx6IJEOHDQdD45Dc7zREMFynhQ";
@@ -57,10 +55,9 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
 
   double _avgSpd = 0;
 
-  double _totalDistance= 0;
+  double _totalDistance = 0;
 
   DatabaseHelper _dbHelper = DatabaseHelper.instance;
-
 
   @override
   void initState() {
@@ -70,7 +67,8 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
 
     polylinePoints = PolylinePoints();
 
-    _locationSubscription = location.onLocationChanged.listen((LocationData cLoc) {
+    _locationSubscription =
+        location.onLocationChanged.listen((LocationData cLoc) {
       initialposition = currentLocation;
       currentLocation = cLoc;
       updatePinOnMap();
@@ -84,16 +82,17 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     _locationSubscription.cancel();
   }
 
-  void _listenLocation(){
-     _locationSubscription = location.onLocationChanged.listen((LocationData cLoc) {
+  void _listenLocation() {
+    _locationSubscription =
+        location.onLocationChanged.listen((LocationData cLoc) {
       initialposition = currentLocation;
       currentLocation = cLoc;
-      if(currentLocation.speed != null){
+      if (currentLocation.speed != null) {
         _speeds.add(currentLocation.speed);
       }
       _calculateDistance();
@@ -157,73 +156,70 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
     }
 
     return Scaffold(
-        body: Stack(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 0),
-              child: GoogleMap(
-                myLocationButtonEnabled: false,
-                compassEnabled: false,
-                tiltGesturesEnabled: false,
-                markers: _markers,
-                polylines: _polylines,
-                mapType: MapType.normal,
-                initialCameraPosition: initialCameraPosition,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                  showPinsOnMap();
-                }),
-            ),
-              Align(
-                alignment: Alignment.topCenter,
+      body: Stack(children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(bottom: 0),
+          child: GoogleMap(
+              myLocationButtonEnabled: false,
+              compassEnabled: false,
+              tiltGesturesEnabled: false,
+              markers: _markers,
+              polylines: _polylines,
+              mapType: MapType.normal,
+              initialCameraPosition: initialCameraPosition,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+                showPinsOnMap();
+              }),
+        ),
+        Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20.0),
+                  ),
+                ),
+                width: MediaQuery.of(context).size.width * 0.95,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Container(
-                  decoration: BoxDecoration(
-                    color:  Colors.white,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20.0),
-                    ), 
-                  ),
-                  width: MediaQuery.of(context).size.width * 0.95,
-                   child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          RaisedButton(
-                            onPressed: _setLocationListening,
-                            color: Colors.amber,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            child: Text("Start/Stop Tracking"),
-                          ),
-                          Text("Average Speed: " + _avgSpd.toString()),
-                          Text("Distance: $_totalDistance" ),
-                        ],
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      RaisedButton(
+                        onPressed: _setLocationListening,
+                        color: Colors.amber,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Text("Start/Stop Tracking"),
                       ),
-                    ),
+                      Text("Average Speed: " + _avgSpd.toString()),
+                      Text("Distance: $_totalDistance"),
+                    ],
                   ),
-                )
-              )
-          ]),
+                ),
+              ),
+            ))
+      ]),
     );
   }
 
-  void _setLocationListening(){
+  void _setLocationListening() {
     _buttonPressed = !_buttonPressed;
-    if(_buttonPressed){
+    if (_buttonPressed) {
       _listenLocation();
       polylineCoords.clear();
       _polylines.clear();
-    }
-    else{
+    } else {
       _locationSubscription.cancel();
       _saveToDB();
       _avgSpd = 0;
-      _totalDistance= 0;
+      _totalDistance = 0;
     }
     log(_buttonPressed.toString());
-    
   }
 
   void showPinsOnMap() {
@@ -239,13 +235,11 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
   }
 
   void setPolyLines() async {
-    log(polylineCoords.toString());
     if (currentLocation != null && initialposition != null) {
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPIKey,
         PointLatLng(initialposition.latitude, initialposition.longitude),
-        PointLatLng(
-            currentLocation.latitude, currentLocation.longitude),
+        PointLatLng(currentLocation.latitude, currentLocation.longitude),
       );
 
       if (result.points.isNotEmpty) {
@@ -253,61 +247,64 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
           polylineCoords.add(LatLng(point.latitude, point.longitude));
           distanceReg.add(LatLng(point.latitude, point.longitude));
         });
-        if(mounted){
+        if (mounted) {
           setState(() {
-          _polylines.add(Polyline(
-              width: 5, // set the width of the polylines
-              polylineId: PolylineId("poly"),
-              color: Color.fromARGB(255, 40, 122, 198),
-              points: polylineCoords));
-        });
+            _polylines.add(Polyline(
+                width: 5, // set the width of the polylines
+                polylineId: PolylineId("poly"),
+                color: Color.fromARGB(255, 40, 122, 198),
+                points: polylineCoords));
+          });
         }
       }
     }
   }
 
   void updatePinOnMap() async {
-    if(mounted){
-    CameraPosition cPosition = CameraPosition(
-      zoom: CAMERA_ZOOM,
-      tilt: CAMERA_TILT,
-      bearing: CAMERA_BEARING,
-      target: LatLng(currentLocation.latitude, currentLocation.longitude),
-    );
+    if (mounted) {
+      CameraPosition cPosition = CameraPosition(
+        zoom: CAMERA_ZOOM,
+        tilt: CAMERA_TILT,
+        bearing: CAMERA_BEARING,
+        target: LatLng(currentLocation.latitude, currentLocation.longitude),
+      );
 
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(cPosition));
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(cPosition));
 
-    
       setState(() {
-      var pinPosition =
-          LatLng(currentLocation.latitude, currentLocation.longitude);
+        var pinPosition =
+            LatLng(currentLocation.latitude, currentLocation.longitude);
 
-      _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
-      _markers.add(Marker(
-          markerId: MarkerId('sourcePin'),
-          position: pinPosition,
-          icon: sourceIcon));
-    });
-    setPolyLines();
+        _markers.removeWhere((m) => m.markerId.value == 'sourcePin');
+        _markers.add(Marker(
+            markerId: MarkerId('sourcePin'),
+            position: pinPosition,
+            icon: sourceIcon));
+      });
+      setPolyLines();
     }
   }
 
-  void _calculateAvgSpeed(){
+  void _calculateAvgSpeed() {
     _speeds.forEach((double element) {
-      _avgSpd += element; 
+      _avgSpd += element;
     });
-    _avgSpd = (_avgSpd/_speeds.length) * 3.6;
+    _avgSpd = (_avgSpd / _speeds.length) * 3.6;
   }
 
   void _calculateDistance() {
-    for(int i = 0; i < distanceReg.length - 1; i++){
-      _totalDistance += Geolocator.distanceBetween(distanceReg[i].latitude, distanceReg[i].longitude, distanceReg[i+1].latitude, distanceReg[i+1].longitude);
+    for (int i = 0; i < distanceReg.length - 1; i++) {
+      _totalDistance += Geolocator.distanceBetween(
+          distanceReg[i].latitude,
+          distanceReg[i].longitude,
+          distanceReg[i + 1].latitude,
+          distanceReg[i + 1].longitude);
     }
-    distanceReg.clear();   
+    distanceReg.clear();
   }
 
-  void _saveToDB() async{
+  void _saveToDB() async {
     TrackInfo trackInfo = TrackInfo();
     trackInfo.avgSpeed = _avgSpd;
     trackInfo.distance = _totalDistance;
@@ -316,9 +313,8 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin{
     trackInfo.fPosLat = polylineCoords[polylineCoords.length - 1].latitude;
     trackInfo.fPosLng = polylineCoords[polylineCoords.length - 1].longitude;
     int id = await _dbHelper.insert(trackInfo);
-    log(id.toString());
   }
-  
+
   @override
   bool get wantKeepAlive => true;
 }

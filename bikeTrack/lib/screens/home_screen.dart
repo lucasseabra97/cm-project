@@ -48,9 +48,6 @@ class _HomeScreen extends State<HomeScreen> {
     ];
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
         body: _screens[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,

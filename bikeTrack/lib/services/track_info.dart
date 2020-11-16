@@ -8,7 +8,6 @@ final String columnFinalLat = 'finalPosLat';
 final String columnFinalLng = 'finalPosLng';
 
 class TrackInfo {
-
   int id;
   double avgSpeed;
   double distance;
@@ -16,37 +15,39 @@ class TrackInfo {
   double initPosLng;
   double fPosLat;
   double fPosLng;
-  
 
+  TrackInfo(
+      {this.id,
+      this.avgSpeed,
+      this.distance,
+      this.initPosLat,
+      this.initPosLng,
+      this.fPosLat,
+      this.fPosLng});
 
-  TrackInfo({this.id, this.avgSpeed, this.distance, this.initPosLat, this.initPosLng, this.fPosLat, this.fPosLng});
-
-  TrackInfo.fromMap(Map<String, dynamic> map){
+  TrackInfo.fromMap(Map<String, dynamic> map) {
     id = map[columnID];
     avgSpeed = map[columnAvgSpeed];
     distance = map[columnDistance];
     initPosLat = map[columnInitialLat];
-    initPosLat = map[columnInitialLng];
+    initPosLng = map[columnInitialLng];
     fPosLat = map[columnFinalLat];
     fPosLng = map[columnFinalLng];
   }
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-          columnID: id,
-          columnAvgSpeed: avgSpeed,
-          columnDistance: distance,
-          columnInitialLat: initPosLat,
-          columnInitialLng: initPosLng,
-          columnFinalLat: fPosLat,
-          columnFinalLng: fPosLng
-        };
-        if (id != null) {
-          map[columnID] = id;
-        }
-        return map;
+      columnID: id,
+      columnAvgSpeed: avgSpeed,
+      columnDistance: distance,
+      columnInitialLat: initPosLat,
+      columnInitialLng: initPosLng,
+      columnFinalLat: fPosLat,
+      columnFinalLng: fPosLng
+    };
+    if (id != null) {
+      map[columnID] = id;
+    }
+    return map;
   }
-
 }
-
-

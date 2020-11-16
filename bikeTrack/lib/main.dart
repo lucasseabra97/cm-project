@@ -8,6 +8,8 @@ import 'models/authentication.dart';
 
 void main() {
   runApp(MyApp());
+
+  /* SystemChrome.setEnabledSystemUIOverlays([]); */
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
           )
         ],
         child: MaterialApp(
-          title: 'Flutter login UI',
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primarySwatch: Colors.amber,
           ),
