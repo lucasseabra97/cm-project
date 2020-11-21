@@ -46,7 +46,7 @@ class _HistoryScreen extends State<HistoryScreen> {
 
   _buildCards(int index) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(4.0),
       child: Card(
         child: Column(
           mainAxisSize: MainAxisSize.min,

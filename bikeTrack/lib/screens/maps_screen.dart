@@ -59,6 +59,8 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
 
   DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
+  Future<LocationData> _future;
+
   @override
   void initState() {
     super.initState();
@@ -67,23 +69,16 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
 
     polylinePoints = PolylinePoints();
 
-    _locationSubscription =
-        location.onLocationChanged.listen((LocationData cLoc) {
-      initialposition = currentLocation;
-      currentLocation = cLoc;
-      updatePinOnMap();
-    });
-
-    _locationSubscription.cancel();
-
     setSourceAndDestinationIcons();
 
-    setInitialLocation();
+    _future = setInitialLocation();
   }
 
   @override
   void dispose() {
-    _locationSubscription.cancel();
+    if(_locationSubscription != null){
+          _locationSubscription.cancel();
+    }
     super.dispose();
   }
 
@@ -107,7 +102,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
     destinationIcon = BitmapDescriptor.defaultMarker;
   }
 
-  void setInitialLocation() async {
+  Future<LocationData> setInitialLocation() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
 
@@ -115,7 +110,7 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
       if (!_serviceEnabled) {
-        return;
+        return null;
       }
     }
 
@@ -123,87 +118,96 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
       if (_permissionGranted != PermissionStatus.granted) {
-        return;
+        return null;
       }
     }
     initialposition = await location.getLocation();
 
-    currentLocation = LocationData.fromMap({
-      "latitude": SOURCE_LOCATION.latitude,
-      "longitude": SOURCE_LOCATION.longitude
-    });
-
     currentLocation = await location.getLocation();
 
-    updatePinOnMap();
+    return currentLocation;
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    CameraPosition initialCameraPosition = CameraPosition(
-        zoom: CAMERA_ZOOM,
-        tilt: CAMERA_TILT,
-        bearing: CAMERA_BEARING,
-        target: SOURCE_LOCATION);
-
-    if (currentLocation != null) {
-      initialCameraPosition = CameraPosition(
-          target: LatLng(currentLocation.latitude, currentLocation.longitude),
-          zoom: CAMERA_ZOOM,
-          tilt: CAMERA_TILT,
-          bearing: CAMERA_BEARING);
-    }
+    CameraPosition initialCameraPosition;
 
     return Scaffold(
-      body: Stack(children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(bottom: 0),
-          child: GoogleMap(
-              myLocationButtonEnabled: false,
-              compassEnabled: false,
-              tiltGesturesEnabled: false,
-              markers: _markers,
-              polylines: _polylines,
-              mapType: MapType.normal,
-              initialCameraPosition: initialCameraPosition,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-                showPinsOnMap();
-              }),
-        ),
-        Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20.0),
+      body: FutureBuilder(
+        future: _future,
+        builder: (BuildContext context, AsyncSnapshot<LocationData> snapshot) {
+          if (snapshot.data == null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    backgroundColor: Colors.blue,
                   ),
-                ),
-                width: MediaQuery.of(context).size.width * 0.95,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      RaisedButton(
-                        onPressed: _setLocationListening,
-                        color: Colors.amber,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Text("Start/Stop Tracking"),
-                      ),
-                      Text("Average Speed: " + _avgSpd.toString()),
-                      Text("Distance: $_totalDistance"),
-                    ],
-                  ),
-                ),
+                  SizedBox(height: 20),
+                  Text("Loading current location..."),
+                ],
               ),
-            ))
-      ]),
+            );
+          } else {
+            initialCameraPosition = CameraPosition(
+                target: LatLng(snapshot.data.latitude, snapshot.data.longitude),
+                zoom: CAMERA_ZOOM,
+                tilt: CAMERA_TILT,
+                bearing: CAMERA_BEARING);
+            return Stack(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 0),
+                child: GoogleMap(
+                    myLocationButtonEnabled: false,
+                    compassEnabled: false,
+                    tiltGesturesEnabled: false,
+                    markers: _markers,
+                    polylines: _polylines,
+                    mapType: MapType.normal,
+                    initialCameraPosition: initialCameraPosition,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                      showPinsOnMap();
+                      updatePinOnMap();
+                    }),
+              ),
+              Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20.0),
+                        ),
+                      ),
+                      width: MediaQuery.of(context).size.width * 0.95,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            RaisedButton(
+                              onPressed: _setLocationListening,
+                              color: Colors.amber,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Text("Start/Stop Tracking"),
+                            ),
+                            Text("Average Speed: " + _avgSpd.toString()),
+                            Text("Distance: $_totalDistance"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ))
+            ]);
+          }
+        },
+      ),
     );
   }
 
