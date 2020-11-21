@@ -1,5 +1,6 @@
 import 'package:bikeTrack/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
@@ -9,7 +10,7 @@ import 'models/authentication.dart';
 void main() {
   runApp(MyApp());
 
-  /* SystemChrome.setEnabledSystemUIOverlays([]); */
+  /* SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.values.first]); */
 }
 
 class MyApp extends StatelessWidget {

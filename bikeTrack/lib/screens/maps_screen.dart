@@ -67,6 +67,15 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
 
     polylinePoints = PolylinePoints();
 
+    _locationSubscription =
+        location.onLocationChanged.listen((LocationData cLoc) {
+      initialposition = currentLocation;
+      currentLocation = cLoc;
+      updatePinOnMap();
+    });
+
+    _locationSubscription.cancel();
+
     setSourceAndDestinationIcons();
 
     setInitialLocation();
@@ -74,11 +83,11 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
 
   @override
   void dispose() {
-    super.dispose();
     _locationSubscription.cancel();
+    super.dispose();
   }
 
-  Future<StreamSubscription<dynamic>> _listenLocation() async {
+  void _listenLocation() {
     _locationSubscription =
         location.onLocationChanged.listen((LocationData cLoc) {
       initialposition = currentLocation;
@@ -90,12 +99,11 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
       _calculateAvgSpeed();
       updatePinOnMap();
     });
-    _locationSubscription.cancel();
-    return _locationSubscription;
   }
 
   void setSourceAndDestinationIcons() async {
     sourceIcon = BitmapDescriptor.defaultMarker;
+
     destinationIcon = BitmapDescriptor.defaultMarker;
   }
 
@@ -148,66 +156,54 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
     }
 
     return Scaffold(
-      body: FutureBuilder(
-          future: _listenLocation(),
-          builder: (BuildContext context,
-              AsyncSnapshot<StreamSubscription<dynamic>> snapshot) {
-            if (snapshot.data == null) {
-              return Container(
-                child: Text("Loading"),
-              );
-            } else {
-              return Stack(children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 0),
-                  child: GoogleMap(
-                      myLocationButtonEnabled: false,
-                      compassEnabled: false,
-                      tiltGesturesEnabled: false,
-                      markers: _markers,
-                      polylines: _polylines,
-                      mapType: MapType.normal,
-                      initialCameraPosition: initialCameraPosition,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
-                        showPinsOnMap();
-                      }),
+      body: Stack(children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(bottom: 0),
+          child: GoogleMap(
+              myLocationButtonEnabled: false,
+              compassEnabled: false,
+              tiltGesturesEnabled: false,
+              markers: _markers,
+              polylines: _polylines,
+              mapType: MapType.normal,
+              initialCameraPosition: initialCameraPosition,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+                showPinsOnMap();
+              }),
+        ),
+        Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20.0),
+                  ),
                 ),
-                Align(
-                    alignment: Alignment.topCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20.0),
-                          ),
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.95,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              RaisedButton(
-                                onPressed: _setLocationListening,
-                                color: Colors.amber,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: Text("Start/Stop Tracking"),
-                              ),
-                              Text("Average Speed: " + _avgSpd.toString()),
-                              Text("Distance: $_totalDistance"),
-                            ],
-                          ),
-                        ),
+                width: MediaQuery.of(context).size.width * 0.95,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      RaisedButton(
+                        onPressed: _setLocationListening,
+                        color: Colors.amber,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Text("Start/Stop Tracking"),
                       ),
-                    ))
-              ]);
-            }
-          }),
+                      Text("Average Speed: " + _avgSpd.toString()),
+                      Text("Distance: $_totalDistance"),
+                    ],
+                  ),
+                ),
+              ),
+            ))
+      ]),
     );
   }
 
