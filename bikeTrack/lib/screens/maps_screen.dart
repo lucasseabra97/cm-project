@@ -76,8 +76,8 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
 
   @override
   void dispose() {
-    if(_locationSubscription != null){
-          _locationSubscription.cancel();
+    if (_locationSubscription != null) {
+      _locationSubscription.cancel();
     }
     super.dispose();
   }
@@ -187,19 +187,79 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
                       width: MediaQuery.of(context).size.width * 0.95,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            RaisedButton(
-                              onPressed: _setLocationListening,
-                              color: Colors.amber,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Text("Start/Stop Tracking"),
-                            ),
-                            Text("Average Speed: " + _avgSpd.toString()),
-                            Text("Distance: $_totalDistance"),
-                          ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: RaisedButton(
+                                      onPressed: _setLocationListening,
+                                      color: Colors.amber,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Text("Start/Stop Tracking"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: RaisedButton(
+                                      onPressed: () {
+                                        if (_buttonPressed) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text(
+                                                      "Could not save the track"),
+                                                  content: Text(
+                                                      "Please stop the tracking before trying to save"),
+                                                  actions: [
+                                                    FlatButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text("Ok"))
+                                                  ],
+                                                );
+                                              });
+                                        } else {
+                                          _saveToDB();
+                                        }
+                                      },
+                                      color: Colors.amber,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Text("Save"),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: RaisedButton(
+                                      onPressed: _reset,
+                                      color: Colors.amber,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Text("Reset"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              /*  Text("Average Speed: " + _avgSpd.toString()),
+                              Text("Distance: $_totalDistance"), */
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -219,9 +279,6 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
       _polylines.clear();
     } else {
       _locationSubscription.cancel();
-      _saveToDB();
-      _avgSpd = 0;
-      _totalDistance = 0;
     }
     log(_buttonPressed.toString());
   }
@@ -317,6 +374,14 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
     trackInfo.fPosLat = polylineCoords[polylineCoords.length - 1].latitude;
     trackInfo.fPosLng = polylineCoords[polylineCoords.length - 1].longitude;
     int id = await _dbHelper.insert(trackInfo);
+    _reset();
+  }
+
+  void _reset() {
+    polylineCoords.clear();
+    _polylines.clear();
+    _avgSpd = 0;
+    _totalDistance = 0;
   }
 
   @override

@@ -41,6 +41,10 @@ class _HistoryScreen extends State<HistoryScreen> {
       body: ListView.builder(
           itemCount: _tracks.length,
           itemBuilder: (context, index) => _buildCards(index)),
+      floatingActionButton: FloatingActionButton(
+          onPressed: null,
+          child: Icon(Icons.share),
+          tooltip: "Scan QR Code"),
     );
   }
 
