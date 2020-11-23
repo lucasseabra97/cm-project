@@ -1,6 +1,7 @@
+import 'package:bikeTrack/screens/history_screen.dart';
 import 'package:bikeTrack/screens/splash_screen.dart';
+import 'package:bikeTrack/services/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
@@ -22,7 +23,10 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider.value(
             value: Authentication(),
-          )
+          ),
+          ChangeNotifierProvider(
+              create: (context) => DatabaseHelper.instance,
+              child: HistoryScreen())
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

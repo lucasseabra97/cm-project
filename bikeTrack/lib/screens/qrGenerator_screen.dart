@@ -9,11 +9,12 @@ class QRGenerator extends StatefulWidget {
 class _QRGenerator extends State<QRGenerator> {
   @override
   Widget build(BuildContext context) {
+    final String qrScan = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: Container(
           child: Center(
         child: QrImage(
-          data: "1234567890",
+          data: qrScan,
           version: QrVersions.auto,
           size: 200.0,
         ),

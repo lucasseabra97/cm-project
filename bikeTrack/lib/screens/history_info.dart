@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
-import 'dart:typed_data';
 
+import 'package:bikeTrack/screens/qrGenerator_screen.dart';
 import 'package:bikeTrack/services/database_helper.dart';
 import 'package:bikeTrack/services/track_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -110,7 +109,25 @@ class _HistoryInfoState extends State<HistoryInfo> {
                           snapshot.data.initPosLng,
                           snapshot.data.fPosLat,
                           snapshot.data.fPosLng);
-                    })
+                    }),
+                Align(
+                    alignment: Alignment.bottomRight,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QRGenerator(),
+                            settings: RouteSettings(
+                              arguments:
+                                  "${_trackInfo.avgSpeed.toInt()},${_trackInfo.distance.toInt()}, ${_trackInfo.initPosLat}, ${_trackInfo.initPosLng}, ${_trackInfo.fPosLat}, ${_trackInfo.fPosLng}",
+                            ),
+                          ),
+                        );
+                      },
+                      child: Icon(Icons.share),
+                      tooltip: "Generate QR",
+                    ))
               ]);
             }
           }),

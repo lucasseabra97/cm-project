@@ -1,11 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:bikeTrack/services/track_info.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
-class DatabaseHelper {
+class DatabaseHelper extends ChangeNotifier {
   static final _databaseName = "trackInfo.db";
 
   // Increment this version when you need to change the schema.
@@ -50,6 +51,7 @@ class DatabaseHelper {
   Future<int> insert(TrackInfo location) async {
     Database db = await database;
     int id = await db.insert('TableTrackInfo', location.toMap());
+    notifyListeners();
     return id;
   }
 
