@@ -17,7 +17,8 @@ class _CameraScreen extends State<CameraScreen> {
   List<Photo> images;
   final _picker = ImagePicker();
   PickedFile _pf;
-
+  File _image;
+  List<File> _images;
   @override
   void initState() {
     super.initState();
@@ -36,38 +37,40 @@ class _CameraScreen extends State<CameraScreen> {
   }
 
   Future<void> pickImageFromCamera() async {
-    PickedFile image =
-        await _picker.getImage(source: ImageSource.camera, imageQuality: 50);
-
+    // PickedFile image =
+    //     await _picker.getImage(source: ImageSource.camera, imageQuality: 50);
+    var image = await ImagePicker.pickImage(
+        source: ImageSource.camera, imageQuality: 50);
     setState(() {
-      _pf = image;
+      _image = image;
+      //_images.add(image);
     });
   }
 
   Future<void> imgFromGallery() async {
-    PickedFile image = await _picker.getImage(source: ImageSource.gallery);
-
+    //PickedFile image = await _picker.getImage(source: ImageSource.gallery);
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
-      _pf = image;
+      _image = image;
     });
   }
 
-  // Future<void> pickImageFromGallery() async {
-  //   final pickedFile = await _picker.getImage(source: ImageSource.gallery);
-  //   final bytes = await pickedFile.readAsBytes();
-  //   if (pickedFile != null) {
-  //     //_image = File(pickedFile.path);
-  //     String imgString = base64Encode(bytes);
-  //     //print(imgString);
+  Future<void> pickImageFromGallery() async {
+    final pickedFile = await _picker.getImage(source: ImageSource.gallery);
+    final bytes = await pickedFile.readAsBytes();
+    if (pickedFile != null) {
+      //_image = File(pickedFile.path);
+      String imgString = base64Encode(bytes);
+      //print(imgString);
 
-  //     Photo photo = Photo(photoName: imgString);
+      Photo photo = Photo(imgString);
 
-  //     dbhelper.save(photo);
-  //     refreshImages();
-  //   } else {
-  //     print('No image selected.');
-  //   }
-  // }
+      dbhelper.save(photo);
+      refreshImages();
+    } else {
+      print('No image selected.');
+    }
+  }
 
   gridView() {
     return Padding(
@@ -89,23 +92,41 @@ class _CameraScreen extends State<CameraScreen> {
     );
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text('Camera screen'),
+  //       actions: <Widget>[
+  //         IconButton(
+  //             icon: Icon(Icons.image),
+  //             onPressed: () {
+  //               pickImageFromGallery();
+  //             })
+  //       ],
+  //     ),
+  //     body: Center(
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.start,
+  //         children: <Widget>[Flexible(child: gridView())],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: ListView(
         children: <Widget>[
-          Expanded(
-              child: GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio: 1.0,
-            mainAxisSpacing: 4.0,
-            crossAxisSpacing: 4.0,
-            // children: <Widget> [
-            //   _pf == null
-            //     ? Text('No image selected.')
-            //     : Image.file(_pf)
-            //   ]
-          )),
+          Container(
+            height: 300,
+            child: Center(
+              child: _image == null
+                  ? Text('No image selected.')
+                  : Image.file(_image),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(32),
             child: Row(
@@ -120,19 +141,6 @@ class _CameraScreen extends State<CameraScreen> {
                     onPressed: () {
                       pickImageFromCamera();
                     }),
-                SizedBox(
-                  width: 60,
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.image,
-                    size: 50,
-                    color: Colors.blue,
-                  ),
-                  onPressed: () {
-                    imgFromGallery();
-                  },
-                ),
               ],
             ),
           )

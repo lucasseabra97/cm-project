@@ -28,7 +28,8 @@ class DBhelper {
   }
 
   _onCreate(Database db, int version) async {
-    await db.execute('CREATE TABLE $TABLE ($ID INTEGER, $NAME TEXT)');
+    await db.execute(
+        'CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY AUTOINCREMENT, $NAME TEXT)');
   }
 
   Future<Photo> save(Photo photo) async {

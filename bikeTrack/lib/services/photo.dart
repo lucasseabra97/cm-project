@@ -2,7 +2,7 @@ class Photo {
   int id;
   String photoName;
 
-  Photo(this.id, this.photoName);
+  Photo(this.photoName);
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
