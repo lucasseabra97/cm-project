@@ -45,7 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
       await Provider.of<Authentication>(context, listen: false)
           .logIn(_authData['email'], _authData['password']);
 
-      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomeScreen()));
     } catch (error) {
       var errorMessage = 'Authentication Failed. Please try again...';
       _showErrorDialog(errorMessage);
@@ -64,8 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             textColor: Colors.white,
             onPressed: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(SignupScreen.routeName);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SignupScreen()));
             },
           )
         ],
@@ -73,9 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [Colors.lightGreenAccent, Colors.blue])),
+            decoration: BoxDecoration(color: Colors.amber),
           ),
           Center(
             child: Card(

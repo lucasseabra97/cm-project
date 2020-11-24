@@ -1,3 +1,5 @@
+import 'package:bikeTrack/screens/login_screen.dart';
+import 'package:bikeTrack/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'qrGenerator_screen.dart';
@@ -30,8 +32,8 @@ class _ProfileScreen extends State<ProfileScreen> {
     return Scaffold(
         //body: Center(child: Text("Profile Screen")),
         body: SafeArea(
-        child: Container(
-      child: ListView(
+      child: Container(
+        child: ListView(
           children: [
             SizedBox(
               height: 20,
@@ -59,7 +61,8 @@ class _ProfileScreen extends State<ProfileScreen> {
                             shape: BoxShape.circle,
                             border: Border.all(
                                 width: 4,
-                                color: Theme.of(context).scaffoldBackgroundColor),
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor),
                             color: Colors.amber),
                         child: IconButton(
                             icon: Icon(
@@ -78,27 +81,50 @@ class _ProfileScreen extends State<ProfileScreen> {
             buildTextField("Full Name", "Mosh Hamedani", false),
             buildTextField("E-mail", "mhd@bomdia.pt", false),
             buildTextField("Password", "**********", true),
-            OutlineButton(
-              highlightColor: Colors.amber,
-              splashColor: Colors.amber,
-              borderSide: BorderSide(
-                width: 3,
-                color: Colors.amber,
-              ),
-              shape: StadiumBorder(),
-              child: Text(
-                "Generate QR",
-                style: TextStyle(fontSize: 17),
-              ),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => QRGenerator()));
-              },
-            ),
+            Padding(
+                padding: const EdgeInsets.all(60),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    RaisedButton(
+                      highlightColor: Colors.amber,
+                      splashColor: Colors.amber,
+                      shape: StadiumBorder(),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()));
+                      },
+                      child: Text(
+                        "Log In",
+                        style: TextStyle(fontSize: 17),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 60,
+                    ),
+                    RaisedButton(
+                      highlightColor: Colors.amber,
+                      splashColor: Colors.amber,
+                      shape: StadiumBorder(),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignupScreen()));
+                      },
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(fontSize: 17),
+                      ),
+                    )
+                  ],
+                )),
           ],
+        ),
       ),
-    ),
-        ));
+    ));
   }
 
   Widget buildTextField(
