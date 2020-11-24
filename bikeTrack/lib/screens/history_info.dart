@@ -130,20 +130,36 @@ class _HistoryInfoState extends State<HistoryInfo> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Row(
+                                Column(
                                   children: [
-                                    Expanded(
-                                      child: RaisedButton(
-                                        onPressed: () {
-                                          _deleteFromDB();
-                                          Navigator.of(context).pop();
-                                        },
-                                        color: Colors.amber,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
-                                        child: Text("Delete"),
-                                      ),
+                                    Text(
+                                      "Distance: ${snapshot.data.distance.toInt()} m",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      "Average Speed: ${snapshot.data.avgSpeed.toInt()} Km/h",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: RaisedButton(
+                                            onPressed: () {
+                                              _deleteFromDB();
+                                              Navigator.of(context).pop();
+                                            },
+                                            color: Colors.amber,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            child: Text("Delete"),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
