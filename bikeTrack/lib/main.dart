@@ -2,9 +2,6 @@ import 'package:bikeTrack/screens/history_screen.dart';
 import 'package:bikeTrack/screens/splash_screen.dart';
 import 'package:bikeTrack/services/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/signup_screen.dart';
 import 'package:provider/provider.dart';
 import 'models/authentication.dart';
 
@@ -34,11 +31,6 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.amber,
           ),
           home: Splash_Screen(),
-          routes: {
-            SignupScreen.routeName: (ctx) => SignupScreen(),
-            LoginScreen.routeName: (ctx) => LoginScreen(),
-            HomeScreen.routeName: (ctx) => HomeScreen(),
-          },
         ));
   }
 }

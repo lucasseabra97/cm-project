@@ -111,23 +111,69 @@ class _HistoryInfoState extends State<HistoryInfo> {
                           snapshot.data.fPosLng);
                     }),
                 Align(
-                    alignment: Alignment.bottomRight,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => QRGenerator(),
-                            settings: RouteSettings(
-                              arguments:
-                                  "${_trackInfo.avgSpeed.toInt()},${_trackInfo.distance.toInt()}, ${_trackInfo.initPosLat}, ${_trackInfo.initPosLng}, ${_trackInfo.fPosLat}, ${_trackInfo.fPosLng}",
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20.0),
+                          ),
+                        ),
+                        width: MediaQuery.of(context).size.width * 0.95,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: RaisedButton(
+                                        onPressed: () {
+                                          _deleteFromDB();
+                                          Navigator.of(context).pop();
+                                        },
+                                        color: Colors.amber,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20)),
+                                        child: Text("Delete"),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                      child: Icon(Icons.share),
-                      tooltip: "Generate QR",
-                    ))
+                        ),
+                      ),
+                    )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => QRGenerator(),
+                              settings: RouteSettings(
+                                arguments:
+                                    "${_trackInfo.avgSpeed.toInt()},${_trackInfo.distance.toInt()}, ${_trackInfo.initPosLat}, ${_trackInfo.initPosLng}, ${_trackInfo.fPosLat}, ${_trackInfo.fPosLng}",
+                              ),
+                            ),
+                          );
+                        },
+                        child: Icon(Icons.share),
+                        tooltip: "Generate QR",
+                      )),
+                )
               ]);
             }
           }),
@@ -185,5 +231,9 @@ class _HistoryInfoState extends State<HistoryInfo> {
       });
       setPolyLines(ilat, ilng, flat, flng);
     }
+  }
+
+  void _deleteFromDB() async {
+    int id = await _dbHelper.delete(_trackInfo.id);
   }
 }

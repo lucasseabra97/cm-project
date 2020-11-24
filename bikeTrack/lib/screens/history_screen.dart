@@ -80,7 +80,8 @@ class _HistoryScreen extends State<HistoryScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HistoryInfo(index: _id),
+                        builder: (context) =>
+                            HistoryInfo(index: _tracks[index].id),
                       ));
                 }),
           ],

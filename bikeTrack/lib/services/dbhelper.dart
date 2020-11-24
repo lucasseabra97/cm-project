@@ -1,30 +1,37 @@
 import 'dart:io';
 import 'package:bikeTrack/services/photo.dart';
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
-class DBhelper {
-  static Database _db;
+class DatabaseHelperImages extends ChangeNotifier {
+  static final _databaseName = "photos.db";
   static const String ID = 'id';
   static const String NAME = 'photoName';
   static const String TABLE = 'PhotosTable';
-  static const String DB_NAME = 'photos.db';
 
-  Future<Database> get db async {
-    if (_db != null) {
-      return _db;
-    }
-    _db = await initDB();
-    return _db;
+  // Increment this version when you need to change the schema.
+  static final _databaseVersion = 1;
+
+  DatabaseHelperImages._privateConstructor();
+  static final DatabaseHelperImages instance =
+      DatabaseHelperImages._privateConstructor();
+
+  static Database _database;
+  Future<Database> get database async {
+    if (_database != null) return _database;
+    _database = await _initDatabase();
+    return _database;
   }
 
-  initDB() async {
+  _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, DB_NAME);
-    var db = await openDatabase(path, version: 1, onCreate: _onCreate);
-    return db;
+    String path = join(documentsDirectory.path, _databaseName);
+
+    return await openDatabase(path,
+        version: _databaseVersion, onCreate: _onCreate);
   }
 
   _onCreate(Database db, int version) async {
@@ -33,14 +40,14 @@ class DBhelper {
   }
 
   Future<Photo> save(Photo photo) async {
-    var dbClient = await db;
-    photo.id = await dbClient.insert(TABLE, photo.toMap());
+    Database db = await database;
+    photo.id = await db.insert(TABLE, photo.toMap());
     return photo;
   }
 
   Future<List<Photo>> getPhotos() async {
-    var dbClient = await db;
-    List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME]);
+    Database db = await database;
+    List<Map> maps = await db.query(TABLE, columns: [ID, NAME]);
     List<Photo> photos = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
@@ -51,7 +58,7 @@ class DBhelper {
   }
 
   Future close() async {
-    var dbClient = await db;
-    dbClient.close();
+    Database db = await database;
+    db.close();
   }
 }

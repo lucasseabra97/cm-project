@@ -19,7 +19,6 @@ class _HomeScreen extends State<HomeScreen> {
     MapsScreen(),
     HistoryScreen(),
     CameraScreen(),
-    GalleryScreen(),
     ProfileScreen(),
   ];
 
@@ -41,8 +40,6 @@ class _HomeScreen extends State<HomeScreen> {
           icon: const Icon(Icons.history), label: 'History'),
       BottomNavigationBarItem(
           icon: const Icon(Icons.camera_alt), label: 'Camera'),
-      BottomNavigationBarItem(
-          icon: const Icon(Icons.photo_album), label: 'Gallery'),
       BottomNavigationBarItem(
           icon: const Icon(Icons.account_box_rounded), label: 'Profile'),
     ];

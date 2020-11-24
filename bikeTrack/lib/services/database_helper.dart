@@ -90,4 +90,10 @@ class DatabaseHelper extends ChangeNotifier {
     }
     return null;
   }
+
+  Future<int> delete(int id) async {
+    Database db = await database;
+    notifyListeners();
+    return await db.delete("TableTrackInfo", where: '_id = ?', whereArgs: [id]);
+  }
 }

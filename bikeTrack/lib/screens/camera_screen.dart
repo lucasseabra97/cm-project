@@ -13,17 +13,17 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreen extends State<CameraScreen> {
-  DBhelper dbhelper;
+  DatabaseHelperImages dbhelper;
   List<Photo> images;
   final _picker = ImagePicker();
   PickedFile _pf;
-  File _image;
+  PickedFile _image;
   List<File> _images;
   @override
   void initState() {
     super.initState();
     images = [];
-    dbhelper = DBhelper();
+    dbhelper = DatabaseHelperImages.instance;
     refreshImages();
   }
 
@@ -37,39 +37,15 @@ class _CameraScreen extends State<CameraScreen> {
   }
 
   Future<void> pickImageFromCamera() async {
-    // PickedFile image =
-    //     await _picker.getImage(source: ImageSource.camera, imageQuality: 50);
-    var image = await ImagePicker.pickImage(
-        source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      _image = image;
-      //_images.add(image);
-    });
-  }
-
-  Future<void> imgFromGallery() async {
-    //PickedFile image = await _picker.getImage(source: ImageSource.gallery);
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _image = image;
-    });
-  }
-
-  Future<void> pickImageFromGallery() async {
-    final pickedFile = await _picker.getImage(source: ImageSource.gallery);
-    final bytes = await pickedFile.readAsBytes();
-    if (pickedFile != null) {
-      //_image = File(pickedFile.path);
+    PickedFile image =
+        await _picker.getImage(source: ImageSource.camera, imageQuality: 50);
+    final bytes = await image.readAsBytes();
+    if (image != null) {
       String imgString = base64Encode(bytes);
-      //print(imgString);
-
       Photo photo = Photo(imgString);
-
       dbhelper.save(photo);
-      refreshImages();
-    } else {
-      print('No image selected.');
     }
+    refreshImages();
   }
 
   gridView() {
@@ -92,59 +68,24 @@ class _CameraScreen extends State<CameraScreen> {
     );
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: Text('Camera screen'),
-  //       actions: <Widget>[
-  //         IconButton(
-  //             icon: Icon(Icons.image),
-  //             onPressed: () {
-  //               pickImageFromGallery();
-  //             })
-  //       ],
-  //     ),
-  //     body: Center(
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.start,
-  //         children: <Widget>[Flexible(child: gridView())],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          Container(
-            height: 300,
-            child: Center(
-              child: _image == null
-                  ? Text('No image selected.')
-                  : Image.file(_image),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(32),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                    icon: Icon(
-                      Icons.camera,
-                      size: 50,
-                      color: Colors.amber,
-                    ),
-                    onPressed: () {
-                      pickImageFromCamera();
-                    }),
-              ],
-            ),
-          )
+      appBar: AppBar(
+        title: Text('Camera screen'),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.image),
+              onPressed: () {
+                pickImageFromCamera();
+              })
         ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[Flexible(child: gridView())],
+        ),
       ),
     );
   }
