@@ -378,10 +378,12 @@ class _MapsScreen extends State<MapsScreen> with AutomaticKeepAliveClientMixin {
   }
 
   void _reset() {
-    polylineCoords.clear();
-    _polylines.clear();
-    _avgSpd = 0;
-    _totalDistance = 0;
+    setState(() {
+      polylineCoords.clear();
+      _polylines.clear();
+      _avgSpd = 0;
+      _totalDistance = 0;
+    });
   }
 
   @override
